@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using OnlinePoll.Application.IService;
 using OnlinePoll.Infrastucture.Persistance;
+using OnlinePoll.Infrastucture.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<OnlinePollContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IPollService, PollService>();
 
 var app = builder.Build();
 
