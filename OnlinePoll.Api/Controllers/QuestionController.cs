@@ -19,11 +19,23 @@ namespace OnlinePoll.Api.Controllers
         {
             if (string.IsNullOrWhiteSpace(questionDto.QuestionText))
             {
-                return BadRequest("Title is required");
+                return BadRequest("QuestionText is required");
             }
 
-            await _questionService.AddQuestionAsync(questionDto);
-            return Ok();
+            try
+            {
+                await _questionService.AddQuestionAsync(questionDto);
+                return Ok();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (KeyNotFoundException ex) 
+            { 
+                return NotFound(ex.Message);
+            }
+            
         }
     }
 }
