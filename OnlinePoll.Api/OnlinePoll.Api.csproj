@@ -16,10 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\OnlinePoll.Application\OnlinePoll.Application.csproj" />
     <ProjectReference Include="..\OnlinePoll.Infrastucture\OnlinePoll.Infrastucture.csproj" />
   </ItemGroup>
 

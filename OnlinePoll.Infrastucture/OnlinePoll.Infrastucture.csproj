@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OnlinePoll.Application\OnlinePoll.Application.csproj" />
     <ProjectReference Include="..\OnlinePoll.Domain\OnlinePoll.Domain.csproj" />
   </ItemGroup>
 

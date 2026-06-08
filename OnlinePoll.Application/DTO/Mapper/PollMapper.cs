@@ -11,6 +11,7 @@ namespace OnlinePoll.Application.DTO.Mapper
             {
                 Title = dto.Title,
                 Description = dto.Description,
+                Created= dto.Created,
             };
         }
         public static PollDto ToDto(Poll entity)
@@ -19,6 +20,7 @@ namespace OnlinePoll.Application.DTO.Mapper
             {
                 Title = entity.Title,
                 Description = entity.Description,
+                Created = entity.Created,
             };
         }
 
