@@ -16,7 +16,7 @@ namespace OnlinePoll.Api.Controllers
         {
             _pollService = pollService;
         }
-        [HttpPost]
+        [HttpPost("CreatePoll/{id}")]
         public async Task<IActionResult> CreatePoll([FromBody] PollDto pollDto)
         {
             if (string.IsNullOrWhiteSpace(pollDto.Title))
@@ -27,5 +27,33 @@ namespace OnlinePoll.Api.Controllers
             await _pollService.AddPollAsync(pollDto);
             return Ok();  
         }
+        [HttpGet("GetPoll/{id}")]
+        public async Task<IActionResult> GetPoll(int pollId)
+        {
+            var res = await _pollService.GetPollAsync(pollId);
+            if(string.IsNullOrEmpty(res.Title))
+            {
+                return NotFound("Poll doesn't exist in database");
+            }
+            return Ok(res);
+        }
+        [HttpPut("UpdatePoll/{id}")]
+        public async Task<IActionResult> UpdatePoll(int pollId, string title, string description)
+        {
+            await _pollService.UpdatePoll(pollId, title, description);
+            return Ok();
+        }
+        [HttpDelete("DeletePoll/{id}")]
+        public async Task<IActionResult> DeletePoll(int pollId)
+        {
+            await _pollService.DeletePollAsync(pollId);
+            return Ok();    
+        }
+        [HttpGet("GetAllPolls/{id}")]
+        public async Task<IActionResult> GetAllPolls()
+        {
+            var polls = await _pollService.GetAllPolls();
+            return Ok(polls);
+        }  
     }
 }

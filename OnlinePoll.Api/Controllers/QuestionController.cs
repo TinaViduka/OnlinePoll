@@ -14,7 +14,7 @@ namespace OnlinePoll.Api.Controllers
         {
             _questionService = questionService;
         }
-        [HttpPost]
+        [HttpPost("CreateQuestion/{id}")]
         public async Task<IActionResult> CreateQuestion([FromBody] QuestionDto questionDto) 
         {
             if (string.IsNullOrWhiteSpace(questionDto.QuestionText))
@@ -24,6 +24,35 @@ namespace OnlinePoll.Api.Controllers
           
             await _questionService.AddQuestionAsync(questionDto);
             return Ok();
+        }
+
+        [HttpGet("GetQuestion/{id}")]
+        public async Task<IActionResult> GetQuestion(int questionId)
+        {
+            var res = await _questionService.GetQuestionAsync(questionId);
+            if(string.IsNullOrEmpty(res.QuestionText))
+            {
+                return NotFound("Doesn't exist");
+            }
+            return Ok(res);
+        }
+        [HttpPut("UpdateQuestion/{id}")]
+        public async Task<IActionResult> UpdateQuestion(int questionId, string questionText)
+        {
+            await _questionService.UpdateQuestion(questionId, questionText);
+            return Ok();
+        }
+        [HttpDelete("DeleteQuestion/{id}")]
+        public async Task<IActionResult> DeleteQuestion(int questionId)
+        {
+            await _questionService.DeletQuestionAsync(questionId);
+            return Ok();
+        }
+        [HttpGet("GetAllPollQuestions/{id}")]
+        public async Task<IActionResult> GetAllPollQuestions(int pollId)
+        {
+            var questions = await _questionService.GetAllPollQuestions(pollId);
+            return Ok(questions);
         }
     }
 }
