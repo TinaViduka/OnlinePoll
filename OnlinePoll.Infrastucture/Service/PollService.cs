@@ -24,15 +24,13 @@ namespace OnlinePoll.Infrastucture.Service
         public async Task AddQuestionAsync(QuestionDto questionDto)
         {
             if(questionDto.PollId <=0)
-            {
-                throw new ArgumentException("PollId is incorrect");
-            }
+                return;
+           
 
             Poll? poll = await _context.Polls.FindAsync(questionDto.PollId);
             if(poll == null)
-            {
-                throw new KeyNotFoundException($"Poll with ID  {questionDto.PollId} doesn't exist");
-            }
+                return;
+
 
             Question question = QuestionMapper.ToDomain(questionDto);
             await _context.AddAsync(questionDto);

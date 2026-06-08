@@ -21,21 +21,9 @@ namespace OnlinePoll.Api.Controllers
             {
                 return BadRequest("QuestionText is required");
             }
-
-            try
-            {
-                await _questionService.AddQuestionAsync(questionDto);
-                return Ok();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (KeyNotFoundException ex) 
-            { 
-                return NotFound(ex.Message);
-            }
-            
+          
+            await _questionService.AddQuestionAsync(questionDto);
+            return Ok();
         }
     }
 }
