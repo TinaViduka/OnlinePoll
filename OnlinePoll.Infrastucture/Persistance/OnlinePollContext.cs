@@ -14,7 +14,6 @@ namespace OnlinePoll.Infrastucture.Persistance
 
         public DbSet<Poll> Polls { get; set; }
         public DbSet<Question> Questions { get; set; }
-        public DbSet<PollSubmission> PollSubmissions { get; set; }
         public DbSet<Answer> Answers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -33,11 +32,6 @@ namespace OnlinePoll.Infrastucture.Persistance
                       .WithMany()
                       .HasForeignKey(a => a.QuestionId)
                       .OnDelete(DeleteBehavior.NoAction);
-
-                entity.HasOne(a => a.PollSubmission)
-                      .WithMany(ps => ps.Answers)
-                      .HasForeignKey(a => a.PollSubmissionId)
-                      .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

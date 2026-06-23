@@ -35,15 +35,10 @@ namespace OnlinePoll.Infrastucture.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<int>("PollSubmissionId")
-                        .HasColumnType("int");
-
                     b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PollSubmissionId");
 
                     b.HasIndex("QuestionId");
 
@@ -76,27 +71,6 @@ namespace OnlinePoll.Infrastucture.Migrations
                     b.ToTable("Polls");
                 });
 
-            modelBuilder.Entity("OnlinePoll.Domain.Entities.PollSubmission", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("PollId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("SubmittedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PollId");
-
-                    b.ToTable("PollSubmissions");
-                });
-
             modelBuilder.Entity("OnlinePoll.Domain.Entities.Question", b =>
                 {
                     b.Property<int>("Id")
@@ -121,32 +95,13 @@ namespace OnlinePoll.Infrastucture.Migrations
 
             modelBuilder.Entity("OnlinePoll.Domain.Entities.Answer", b =>
                 {
-                    b.HasOne("OnlinePoll.Domain.Entities.PollSubmission", "PollSubmission")
-                        .WithMany("Answers")
-                        .HasForeignKey("PollSubmissionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("OnlinePoll.Domain.Entities.Question", "Question")
                         .WithMany()
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("PollSubmission");
-
                     b.Navigation("Question");
-                });
-
-            modelBuilder.Entity("OnlinePoll.Domain.Entities.PollSubmission", b =>
-                {
-                    b.HasOne("OnlinePoll.Domain.Entities.Poll", "Poll")
-                        .WithMany()
-                        .HasForeignKey("PollId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Poll");
                 });
 
             modelBuilder.Entity("OnlinePoll.Domain.Entities.Question", b =>
@@ -163,11 +118,6 @@ namespace OnlinePoll.Infrastucture.Migrations
             modelBuilder.Entity("OnlinePoll.Domain.Entities.Poll", b =>
                 {
                     b.Navigation("Questions");
-                });
-
-            modelBuilder.Entity("OnlinePoll.Domain.Entities.PollSubmission", b =>
-                {
-                    b.Navigation("Answers");
                 });
 #pragma warning restore 612, 618
         }

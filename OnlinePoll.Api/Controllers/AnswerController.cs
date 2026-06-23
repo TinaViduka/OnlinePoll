@@ -13,7 +13,7 @@ namespace OnlinePoll.Api.Controllers
         {
             _answerService = answerService;
         }
-        [HttpPost("AddAnswer/{id}")]
+        [HttpPost("AddAnswer")]
         public async Task<IActionResult> AddAnswer([FromBody] AnswerDto answerDto)
         {
             if (string.IsNullOrEmpty(answerDto.AnswerText)) 
@@ -23,7 +23,7 @@ namespace OnlinePoll.Api.Controllers
             await _answerService.AddAnswerAsync(answerDto);
             return Ok();
         }
-        [HttpGet("GetAnswer/{id}")]
+        [HttpGet("GetAnswer/{answerId}")]
         public async Task<IActionResult> GetAnswer(int answerId)
         {
             var res = await _answerService.GetAnswerAsync(answerId);
@@ -33,19 +33,19 @@ namespace OnlinePoll.Api.Controllers
             }
             return Ok(res);
         }
-        [HttpPut("UpdateAnswer/{id}")]
+        [HttpPut("UpdateAnswer/{answerId}")]
         public async Task<IActionResult> UpdateAnswer(int answerId, string answerText)
         {
             await _answerService.UpdateAnswerAsync(answerId, answerText);
             return Ok();
         }
-        [HttpDelete("DeleteAnswer/{id}")]
+        [HttpDelete("DeleteAnswer/{answerId}")]
         public async Task<IActionResult> DeleteAnswer(int answerId)
         {
             await _answerService.DeletAnswerAsync(answerId);
             return Ok();
         }
-        [HttpGet("GetAllQuestionAnswers/{id}")]
+        [HttpGet("GetAllQuestionAnswers/{questionId}")]
         public async Task<IActionResult> GetAllQuestionAnswers(int questionId)
         {
             var anwsers = await _answerService.GetAllQuestionAnswers(questionId);
