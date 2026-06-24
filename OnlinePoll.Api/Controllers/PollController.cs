@@ -16,7 +16,7 @@ namespace OnlinePoll.Api.Controllers
         {
             _pollService = pollService;
         }
-        [HttpPost("CreatePoll/{id}")]
+        [HttpPost("CreatePoll")]
         public async Task<IActionResult> CreatePoll([FromBody] PollDto pollDto)
         {
             if (string.IsNullOrWhiteSpace(pollDto.Title))
@@ -27,7 +27,7 @@ namespace OnlinePoll.Api.Controllers
             await _pollService.AddPollAsync(pollDto);
             return Ok();  
         }
-        [HttpGet("GetPoll/{id}")]
+        [HttpGet("GetPoll/{pollId}")]
         public async Task<IActionResult> GetPoll(int pollId)
         {
             var res = await _pollService.GetPollAsync(pollId);
@@ -37,19 +37,19 @@ namespace OnlinePoll.Api.Controllers
             }
             return Ok(res);
         }
-        [HttpPut("UpdatePoll/{id}")]
+        [HttpPut("UpdatePoll/{pollId}")]
         public async Task<IActionResult> UpdatePoll(int pollId, string title, string description)
         {
             await _pollService.UpdatePoll(pollId, title, description);
             return Ok();
         }
-        [HttpDelete("DeletePoll/{id}")]
+        [HttpDelete("DeletePoll/{pollId}")]
         public async Task<IActionResult> DeletePoll(int pollId)
         {
             await _pollService.DeletePollAsync(pollId);
             return Ok();    
         }
-        [HttpGet("GetAllPolls/{id}")]
+        [HttpGet("GetAllPolls")]
         public async Task<IActionResult> GetAllPolls()
         {
             var polls = await _pollService.GetAllPolls();

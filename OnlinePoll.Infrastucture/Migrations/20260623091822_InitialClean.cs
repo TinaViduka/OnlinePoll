@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace OnlinePoll.Infrastucture.Migrations
 {
     /// <inheritdoc />
-    public partial class FirstMigration : Migration
+    public partial class InitialClean : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,26 +25,6 @@ namespace OnlinePoll.Infrastucture.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Polls", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PollSubmissions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    PollId = table.Column<int>(type: "int", nullable: false),
-                    SubmittedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PollSubmissions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PollSubmissions_Polls_PollId",
-                        column: x => x.PollId,
-                        principalTable: "Polls",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -74,18 +54,11 @@ namespace OnlinePoll.Infrastucture.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AnswerText = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    QuestionId = table.Column<int>(type: "int", nullable: false),
-                    PollSubmissionId = table.Column<int>(type: "int", nullable: false)
+                    QuestionId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Answers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Answers_PollSubmissions_PollSubmissionId",
-                        column: x => x.PollSubmissionId,
-                        principalTable: "PollSubmissions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Answers_Questions_QuestionId",
                         column: x => x.QuestionId,
@@ -94,19 +67,9 @@ namespace OnlinePoll.Infrastucture.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Answers_PollSubmissionId",
-                table: "Answers",
-                column: "PollSubmissionId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Answers_QuestionId",
                 table: "Answers",
                 column: "QuestionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PollSubmissions_PollId",
-                table: "PollSubmissions",
-                column: "PollId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Questions_PollId",
@@ -119,9 +82,6 @@ namespace OnlinePoll.Infrastucture.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Answers");
-
-            migrationBuilder.DropTable(
-                name: "PollSubmissions");
 
             migrationBuilder.DropTable(
                 name: "Questions");

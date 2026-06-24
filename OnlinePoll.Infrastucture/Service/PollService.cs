@@ -45,7 +45,12 @@ namespace OnlinePoll.Infrastucture.Service
             if (rez == null)
                 return;
 
-            _context.Remove(rez);
+            bool hasQuestions = await _context.Questions.AnyAsync(q => q.PollId == pollId);
+
+            if (hasQuestions)
+                return;
+
+            _context.Polls.Remove(rez);
             await _context.SaveChangesAsync();
             return;
         }
@@ -132,32 +137,10 @@ namespace OnlinePoll.Infrastucture.Service
             if (question == null) 
                 return;
 
-            if(answerDto.PollSubmissionId <= 0)
-                return;
-
-            PollSubmission? pollSubmission = await _context.PollSubmissions.FindAsync(answerDto.PollSubmissionId);
-            if (pollSubmission == null)
-                return;
-
             Answer answer = AnswerMapper.ToDomain(answerDto);
             await _context.AddAsync(answer);
             await _context.SaveChangesAsync();
 
-        }
-
-        public async Task AddPollSubmissionAsync(PollSubmissionDto pollSubmissionDto)
-        {
-            if (pollSubmissionDto.PollId <= 0)
-                return;
-
-
-            Poll? poll = await _context.Polls.FindAsync(pollSubmissionDto.PollId);
-            if (poll == null)
-                return;
-
-            PollSubmission? pollSubmission = PollSubmissionMapper.ToDomain(pollSubmissionDto);  
-            await _context.AddAsync(pollSubmission);
-            await _context.SaveChangesAsync();
         }
 
         public async Task<AnswerDto> GetAnswerAsync(int answerId)
@@ -197,39 +180,6 @@ namespace OnlinePoll.Infrastucture.Service
             foreach (var answer in answers) 
             {
                 res.Add(AnswerMapper.ToDto(answer));
-            }
-            return res;
-        }
-
-        public async Task<PollSubmissionDto> GetPollSubmissionAsync(int pollSubmissionId)
-        {
-            var res = await _context.PollSubmissions.FirstOrDefaultAsync(p => p.Id == pollSubmissionId);
-            if (res == null)
-                return new PollSubmissionDto();
-
-            PollSubmissionDto pollSubmissionDto = PollSubmissionMapper.ToDto(res);
-            return pollSubmissionDto;
-        }
-
-        public async Task DeletPollSubmissionAsync(int pollSubmissioId)
-        {
-            var res = await _context.PollSubmissions.FirstOrDefaultAsync(q => q.Id == pollSubmissioId);
-            if (res == null)
-                return;
-            _context.Remove(res);
-            await _context.SaveChangesAsync();
-            return;
-        }
-
-        public async Task<List<PollSubmissionDto>> GetAllPollSubmissions()
-        {
-            var pollSubmissions = await _context.PollSubmissions.ToListAsync();
-
-            List<PollSubmissionDto> res = new();
-
-            foreach (var pollSubmission in pollSubmissions)
-            {
-                res.Add(PollSubmissionMapper.ToDto(pollSubmission));
             }
             return res;
         }

@@ -9,8 +9,7 @@ namespace OnlinePoll.Application.DTO.Mapper
             return new Answer
             {
                 AnswerText = dto.AnswerText,
-                QuestionId = dto.QuestionId,
-                PollSubmissionId = dto.PollSubmissionId
+                QuestionId = dto.QuestionId
             };
         }
 
@@ -19,8 +18,7 @@ namespace OnlinePoll.Application.DTO.Mapper
             return new AnswerDto
             {
                 AnswerText = entity.AnswerText,
-                QuestionId = entity.QuestionId,
-                PollSubmissionId = entity.PollSubmissionId
+                QuestionId = entity.QuestionId
             };
         }
     }
