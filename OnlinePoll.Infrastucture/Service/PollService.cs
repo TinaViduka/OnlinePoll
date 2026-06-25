@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using OnlinePoll.Application.DTO;
 using OnlinePoll.Application.DTO.Mapper;
@@ -7,14 +8,16 @@ using OnlinePoll.Domain.Entities;
 using OnlinePoll.Infrastucture.Persistance;
 using System.ComponentModel.DataAnnotations;
 
-namespace OnlinePoll.Infrastucture.Service
+namespace OnlinePoll.Infrastucture.Service 
 {
     public class PollService : IPollService
     {
         private readonly OnlinePollContext _context;
-        public PollService(OnlinePollContext context)
+        private readonly ILogger<PollService> _logger;
+        public PollService(OnlinePollContext context, ILogger<PollService> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public async Task AddPollAsync(PollDto pollDto)
@@ -26,13 +29,18 @@ namespace OnlinePoll.Infrastucture.Service
 
         public async Task AddQuestionAsync(QuestionDto questionDto)
         {
-            if(questionDto.PollId <=0)
+            if(questionDto.PollId <= 0)
+            {
+                _logger.LogWarning("Poll with that ID doesn't exist");
                 return;
-           
+            }
 
             Poll? poll = await _context.Polls.FindAsync(questionDto.PollId);
-            if(poll == null)
+            if (poll is null)
+            {
+                _logger.LogWarning("The poll doesn't exist");
                 return;
+            }
 
             Question question = QuestionMapper.ToDomain(questionDto);
             await _context.AddAsync(question);
@@ -42,13 +50,19 @@ namespace OnlinePoll.Infrastucture.Service
         public async Task DeletePollAsync(int pollId)
         {
             var rez = await _context.Polls.FirstOrDefaultAsync(p => p.Id == pollId);
-            if (rez == null)
+            if (rez is null)
+            {
+                _logger.LogWarning("Poll with ID {PollID} doesn't exist", pollId);
                 return;
+            }
 
             bool hasQuestions = await _context.Questions.AnyAsync(q => q.PollId == pollId);
 
             if (hasQuestions)
+            {
+                _logger.LogWarning("Poll with ID {PollID} has question", pollId);
                 return;
+            }
 
             _context.Polls.Remove(rez);
             await _context.SaveChangesAsync();
@@ -58,8 +72,12 @@ namespace OnlinePoll.Infrastucture.Service
         public async Task DeletQuestionAsync(int questionId)
         {
             var res = await _context.Questions.FirstOrDefaultAsync(q => q.Id == questionId);   
-            if(res == null)
+            if(res is null)
+            {
+                _logger.LogWarning("Question with ID {QuestionID} doesn't exist", questionId);
                 return;
+            }
+
             _context.Remove(res);
             await _context.SaveChangesAsync();
             return;
@@ -94,18 +112,25 @@ namespace OnlinePoll.Infrastucture.Service
         public async Task<PollDto> GetPollAsync(int pollId)
         {
             var rez = await _context.Polls.FirstOrDefaultAsync(p => p.Id == pollId);
-            if (rez == null)
+            if (rez is null)
+            {
+                _logger.LogWarning("Poll with ID {PollID} doesn't exist", pollId);
                 return new PollDto();
+            } 
 
             PollDto pollDto = PollMapper.ToDto(rez);
             return pollDto;
         }
 
-        public async Task<QuestionDto> GetQuestionAsync(int questionId)
+        public async Task<QuestionDto> GetQuestionAsync(int questionId, int pollId)
         {
-            var rez = await _context.Questions.FirstOrDefaultAsync(q => q.Id == questionId);
-            if (rez == null)
+            var rez = await _context.Questions.FirstOrDefaultAsync(q => q.Id == questionId && q.PollId == pollId);
+            if (rez is null) 
+            {
+                _logger.LogWarning("Question with ID {QuestionID} doesn't exist in that poll", questionId);
                 return new QuestionDto();
+            }
+                
 
             QuestionDto questionDto = QuestionMapper.ToDto(rez);
             return questionDto;
@@ -131,11 +156,19 @@ namespace OnlinePoll.Infrastucture.Service
         public async Task AddAnswerAsync(AnswerDto answerDto)
         {
             if (answerDto.QuestionId <= 0)
+            {
+                _logger.LogWarning("Question with that ID doesn't exist");
                 return;
+            }
+                
 
             Question? question = await _context.Questions.FindAsync(answerDto.QuestionId);
-            if (question == null) 
+            if (question is null)
+            {
+                _logger.LogWarning("Question with ID {QuestionID} doesn't exist", answerDto.QuestionId);
                 return;
+            }
+                
 
             Answer answer = AnswerMapper.ToDomain(answerDto);
             await _context.AddAsync(answer);
@@ -143,11 +176,14 @@ namespace OnlinePoll.Infrastucture.Service
 
         }
 
-        public async Task<AnswerDto> GetAnswerAsync(int answerId)
+        public async Task<AnswerDto> GetAnswerAsync(int answerId, int questionId)
         {
-            var res = await _context.Answers.FirstOrDefaultAsync(a => a.Id == answerId);
-            if(res == null)
+            var res = await _context.Answers.FirstOrDefaultAsync(a => a.Id == answerId && a.QuestionId == questionId);
+            if (res is null)
+            {
+                _logger.LogWarning("Answer with ID {AnswerID} doesn't exist for the question with ID {QuestionID}", answerId, questionId);
                 return new AnswerDto();
+            }
 
             AnswerDto answerDto = AnswerMapper.ToDto(res);
             return answerDto;
@@ -164,8 +200,12 @@ namespace OnlinePoll.Infrastucture.Service
         public async Task DeletAnswerAsync(int answerId)
         {
             var res = await _context.Answers.FirstOrDefaultAsync(q => q.Id == answerId);
-            if (res == null)
+            if (res is null)
+            {
+                _logger.LogWarning("Answer with ID {AnswerID} doesn't exist", answerId);
                 return;
+            }
+                
             _context.Remove(res);
             await _context.SaveChangesAsync();
             return;

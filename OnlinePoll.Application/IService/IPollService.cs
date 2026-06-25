@@ -8,9 +8,9 @@ namespace OnlinePoll.Application.IService
         public Task AddQuestionAsync(QuestionDto questionDto);
         public Task AddPollAsync(PollDto pollDto);
         public Task AddAnswerAsync(AnswerDto answerDto);
-        public Task<QuestionDto> GetQuestionAsync(int questionId);
+        public Task<QuestionDto> GetQuestionAsync(int questionId, int pollId);
         public Task<PollDto> GetPollAsync(int pollId);
-        public Task<AnswerDto> GetAnswerAsync(int answerId);
+        public Task<AnswerDto> GetAnswerAsync(int answerId, int questionId);
         public Task UpdatePoll(int pollId, string title, string description);
         public Task UpdateQuestion(int questionId, string questionText);
         public Task UpdateAnswerAsync(int answerId, string answerText);

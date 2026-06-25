@@ -24,9 +24,9 @@ namespace OnlinePoll.Api.Controllers
             return Ok();
         }
         [HttpGet("GetAnswer/{answerId}")]
-        public async Task<IActionResult> GetAnswer(int answerId)
+        public async Task<IActionResult> GetAnswer(int answerId, int questionId)
         {
-            var res = await _answerService.GetAnswerAsync(answerId);
+            var res = await _answerService.GetAnswerAsync(answerId, questionId);
             if(string.IsNullOrEmpty(res.AnswerText))
             {
                 return NotFound("Doesn't exist");
