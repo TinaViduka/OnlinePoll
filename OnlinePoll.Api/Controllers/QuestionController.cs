@@ -27,9 +27,9 @@ namespace OnlinePoll.Api.Controllers
         }
 
         [HttpGet("GetQuestion/{questionId}")]
-        public async Task<IActionResult> GetQuestion(int questionId)
+        public async Task<IActionResult> GetQuestion(int questionId, int pollId)
         {
-            var res = await _questionService.GetQuestionAsync(questionId);
+            var res = await _questionService.GetQuestionAsync(questionId, pollId);
             if(string.IsNullOrEmpty(res.QuestionText))
             {
                 return NotFound("Doesn't exist");
