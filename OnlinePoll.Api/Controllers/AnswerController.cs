@@ -9,14 +9,14 @@ namespace OnlinePoll.Api.Controllers
     public class AnswerController : ControllerBase
     {
         private readonly IPollService _answerService;
-        public AnswerController (IPollService answerService)
+        public AnswerController(IPollService answerService)
         {
             _answerService = answerService;
         }
         [HttpPost("AddAnswer")]
         public async Task<IActionResult> AddAnswer([FromBody] AnswerDto answerDto)
         {
-            if (string.IsNullOrEmpty(answerDto.AnswerText)) 
+            if (string.IsNullOrEmpty(answerDto.AnswerText))
             {
                 return BadRequest("AnswerText is required");
             }
@@ -27,7 +27,7 @@ namespace OnlinePoll.Api.Controllers
         public async Task<IActionResult> GetAnswer(int answerId, int questionId)
         {
             var res = await _answerService.GetAnswerAsync(answerId, questionId);
-            if(string.IsNullOrEmpty(res.AnswerText))
+            if (string.IsNullOrEmpty(res.AnswerText))
             {
                 return NotFound("Doesn't exist");
             }
@@ -50,6 +50,12 @@ namespace OnlinePoll.Api.Controllers
         {
             var anwsers = await _answerService.GetAllQuestionAnswers(questionId);
             return Ok(anwsers);
+        }
+        [HttpGet("GetAllAnswersForQuestion/{questionId}")]
+        public async Task<IActionResult> GetAllAnswersForQuestion(int questionId)
+        {
+            var answers = await _answerService.GetAllAnswersForQuestion(questionId);
+            return Ok(answers);
         }
     }
 }

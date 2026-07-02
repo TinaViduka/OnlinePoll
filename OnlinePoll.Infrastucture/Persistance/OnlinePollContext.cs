@@ -29,9 +29,14 @@ namespace OnlinePoll.Infrastucture.Persistance
                       .HasMaxLength(1000);
 
                 entity.HasOne(a => a.Question)
-                      .WithMany()
+                      .WithMany(q => q.Answers)
                       .HasForeignKey(a => a.QuestionId)
                       .OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(a => a.QuestionOption) 
+                  .WithMany()
+                  .HasForeignKey(a => a.QuestionOptionId)
+                  .OnDelete(DeleteBehavior.NoAction)
+                  .IsRequired(false);
             });
         }
     }

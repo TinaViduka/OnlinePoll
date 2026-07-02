@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OnlinePoll.Infrastucture.Persistance;
 
@@ -11,9 +12,11 @@ using OnlinePoll.Infrastucture.Persistance;
 namespace OnlinePoll.Infrastucture.Migrations
 {
     [DbContext(typeof(OnlinePollContext))]
-    partial class OnlinePollContextModelSnapshot : ModelSnapshot
+    [Migration("20260625130854_AddedQuestionOptions")]
+    partial class AddedQuestionOptions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

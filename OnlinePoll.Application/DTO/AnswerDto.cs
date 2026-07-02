@@ -2,8 +2,9 @@
 {
     public class AnswerDto
     {
-        public string AnswerText { get; set; } = string.Empty;
+        public string? AnswerText { get; set; } = string.Empty;
 
         public int QuestionId { get; set; }
+        public int? QuestionOptionId { get; set; }
     }
 }
