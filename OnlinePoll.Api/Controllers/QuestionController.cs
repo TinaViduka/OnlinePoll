@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using OnlinePoll.Application.DTO;
 using OnlinePoll.Application.IService;
+using OnlinePoll.Domain.Entities;
+using OnlinePoll.Domain.Enums;
 
 namespace OnlinePoll.Api.Controllers
 {
@@ -54,5 +56,13 @@ namespace OnlinePoll.Api.Controllers
             var questions = await _questionService.GetAllPollQuestions(pollId);
             return Ok(questions);
         }
+
+        [HttpGet("GetQuestionByType/{questionType}")]
+        public async Task<IActionResult> GetQuestionByType(QuestionType questionType)
+        {
+            var questions = await _questionService.GetQuestionsByType(questionType);
+            return Ok(questions);
+        }
+
     }
 }

@@ -5,6 +5,7 @@ using OnlinePoll.Application.DTO;
 using OnlinePoll.Application.DTO.Mapper;
 using OnlinePoll.Application.IService;
 using OnlinePoll.Domain.Entities;
+using OnlinePoll.Domain.Enums;
 using OnlinePoll.Infrastucture.Persistance;
 using System.ComponentModel.DataAnnotations;
 
@@ -29,7 +30,7 @@ namespace OnlinePoll.Infrastucture.Service
 
         public async Task AddQuestionAsync(QuestionDto questionDto)
         {
-            if(questionDto.PollId <= 0)
+            if (questionDto.PollId <= 0)
             {
                 _logger.LogWarning("Poll with that ID doesn't exist");
                 return;
@@ -71,8 +72,8 @@ namespace OnlinePoll.Infrastucture.Service
 
         public async Task DeletQuestionAsync(int questionId)
         {
-            var res = await _context.Questions.FirstOrDefaultAsync(q => q.Id == questionId);   
-            if(res is null)
+            var res = await _context.Questions.FirstOrDefaultAsync(q => q.Id == questionId);
+            if (res is null)
             {
                 _logger.LogWarning("Question with ID {QuestionID} doesn't exist", questionId);
                 return;
@@ -98,14 +99,14 @@ namespace OnlinePoll.Infrastucture.Service
 
         public async Task<List<QuestionDto>> GetAllPollQuestions(int pollId)
         {
-            var question = await _context.Questions.Where(q => q.PollId == pollId).ToListAsync();
+            var question = await _context.Questions.Include(q => q.Options).Where(q => q.PollId == pollId).ToListAsync();
 
             List<QuestionDto> res = new();
 
             foreach (var questions in question)
             {
                 res.Add(QuestionMapper.ToDto(questions));
-            } 
+            }
             return res;
         }
 
@@ -116,7 +117,7 @@ namespace OnlinePoll.Infrastucture.Service
             {
                 _logger.LogWarning("Poll with ID {PollID} doesn't exist", pollId);
                 return new PollDto();
-            } 
+            }
 
             PollDto pollDto = PollMapper.ToDto(rez);
             return pollDto;
@@ -124,13 +125,13 @@ namespace OnlinePoll.Infrastucture.Service
 
         public async Task<QuestionDto> GetQuestionAsync(int questionId, int pollId)
         {
-            var rez = await _context.Questions.FirstOrDefaultAsync(q => q.Id == questionId && q.PollId == pollId);
-            if (rez is null) 
+            var rez = await _context.Questions.Include(q => q.Options).FirstOrDefaultAsync(q => q.Id == questionId && q.PollId == pollId);
+            if (rez is null)
             {
                 _logger.LogWarning("Question with ID {QuestionID} doesn't exist in that poll", questionId);
                 return new QuestionDto();
             }
-                
+
 
             QuestionDto questionDto = QuestionMapper.ToDto(rez);
             return questionDto;
@@ -148,7 +149,7 @@ namespace OnlinePoll.Infrastucture.Service
         public async Task UpdateQuestion(int questionId, string questionText)
         {
             var res = await _context.Questions.FirstOrDefaultAsync(q => q.Id == questionId);
-            res.QuestionText= questionText;
+            res.QuestionText = questionText;
             _context.Update(res);
             await _context.SaveChangesAsync();
         }
@@ -160,7 +161,7 @@ namespace OnlinePoll.Infrastucture.Service
                 _logger.LogWarning("Question with that ID doesn't exist");
                 return;
             }
-                
+
 
             Question? question = await _context.Questions.FindAsync(answerDto.QuestionId);
             if (question is null)
@@ -168,7 +169,7 @@ namespace OnlinePoll.Infrastucture.Service
                 _logger.LogWarning("Question with ID {QuestionID} doesn't exist", answerDto.QuestionId);
                 return;
             }
-                
+
 
             Answer answer = AnswerMapper.ToDomain(answerDto);
             await _context.AddAsync(answer);
@@ -205,23 +206,59 @@ namespace OnlinePoll.Infrastucture.Service
                 _logger.LogWarning("Answer with ID {AnswerID} doesn't exist", answerId);
                 return;
             }
-                
+
             _context.Remove(res);
             await _context.SaveChangesAsync();
             return;
         }
 
-        public async  Task <List<AnswerDto>> GetAllQuestionAnswers(int questionId)
+        public async Task<List<AnswerDto>> GetAllQuestionAnswers(int questionId)
         {
             var answers = await _context.Answers.Where(a => a.QuestionId == questionId).ToListAsync();
 
             List<AnswerDto> res = new();
 
-            foreach (var answer in answers) 
+            foreach (var answer in answers)
             {
                 res.Add(AnswerMapper.ToDto(answer));
             }
             return res;
+        }
+
+        public async Task<List<QuestionDto>> GetQuestionsByType(QuestionType questionType)
+        {
+            var questions = await _context.Questions
+                .Where(q => q.Type == questionType)
+                .ToListAsync();
+
+            List<QuestionDto> res = new();
+
+            foreach (var question in questions)
+            {
+                res.Add(QuestionMapper.ToDto(question));
+            }
+            return res;
+        }
+
+        public async Task<QuestionAnswersDto> GetAllAnswersForQuestion(int questionId)
+        {
+            var answers = await _context.Questions
+                .Where(q => q.Id == questionId)
+                .Select(q => new QuestionAnswersDto 
+                { 
+                    PollTitle = q.Poll.Title,
+                    QuestionText = q.QuestionText,
+                    Answers = _context.Answers
+                        .Where(a => a.QuestionId == q.Id)
+                        .Select(a => new AnswerDto
+                        {
+                            AnswerText = a.AnswerText,
+                            QuestionId = a.QuestionId,
+                            QuestionOptionId = a.QuestionOptionId
+                        }).ToList()
+                }).FirstOrDefaultAsync();
+
+            return answers;
         }
     }
 }

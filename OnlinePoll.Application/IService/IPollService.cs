@@ -1,5 +1,6 @@
 ﻿using OnlinePoll.Application.DTO;
 using OnlinePoll.Domain.Entities;
+using OnlinePoll.Domain.Enums;
 
 namespace OnlinePoll.Application.IService
 {
@@ -20,5 +21,7 @@ namespace OnlinePoll.Application.IService
         public Task<List<QuestionDto>> GetAllPollQuestions(int pollId);
         public Task<List<PollDto>> GetAllPolls();
         public Task<List<AnswerDto>> GetAllQuestionAnswers(int questionId);
+        public Task <List<QuestionDto>>GetQuestionsByType(QuestionType questionType);
+        public Task<QuestionAnswersDto> GetAllAnswersForQuestion(int questionId);
     }
 }
